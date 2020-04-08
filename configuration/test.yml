@@ -1,0 +1,6 @@
+foo: bar
+entries:
+  - 1
+  - 2
+  - 3
+stage: "{{stage}}"
