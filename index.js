@@ -1,7 +1,12 @@
 const glob = require('glob');
 const slim = require('@sullivan/slim');
+const path = require('path');
+const fs = require('fs-extra');
 const argparse = require('./utils/argparse');
 const resolve = require('./utils/resolve');
+
+const BUILD_DIR = path.join(__dirname, 'build');
+fs.removeSync(BUILD_DIR);
 
 const options = argparse({
   version: '1.0.0',
@@ -12,27 +17,29 @@ const options = argparse({
       ['-s', '--stage'],
       {
         help: 'Environmental stage',
-      }
+      },
     ],
     [
       ['-r', '--region'],
       {
         help: 'Environmental region',
-      }
-    ]
-  ]
+      },
+    ],
+  ],
 });
 
-const path = require('path');
-
 const files = glob.sync('configuration/*');
-const c = files
+const config = files
   .map((f) => path.join(__dirname, f))
   .map(resolve)
   .map(JSON.stringify)
   .map((v) => slim(v)(options))
   .map(JSON.parse)
-  .reduce((a, b) => ({ ...a, ... b}), {});
-console.log("files", files);
-console.log('c', c);
-console.log("options", options);
+  .reduce((a, b) => ({ ...a, ...b }), {});
+
+fs.ensureDir(BUILD_DIR)
+
+fs.writeFileSync(
+  path.join(BUILD_DIR, 'config.json'),
+  JSON.stringify(config, null, 2),
+);
