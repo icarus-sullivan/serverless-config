@@ -280,6 +280,11 @@
   resolved "https://registry.yarnpkg.com/@sullivan/slim/-/slim-0.0.2.tgz#83a909836f6a7d4c88f201a7df3c19569f45d033"
   integrity sha512-a8ngmHNw9Gn6kEN9eMqt/ZBWGf2uu4mQn45yN5sm5A8pOcmnUvwpkcyucPJl8CVqmSBerTswGsmiENR2NIpJAg==
 
+"@sullux/fp-light@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@sullux/fp-light/-/fp-light-0.0.16.tgz#6654583de8e11b9246a4e6b05e535756f1975738"
+  integrity sha512-8sj3clIS16Gcub8mpFfKRUv/hXGd1MkDgc0dpck+Q++kS2sfDQejoDnMn4Mpy2sr/ymUSdKeyKAVd7sVHe+Uvg==
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -614,7 +619,7 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.346.0:
+aws-sdk@^2.346.0, aws-sdk@^2.656.0:
   version "2.656.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.656.0.tgz#0d74664ddbf30701073be9f9913ee7266afef3b4"
   integrity sha512-UzqDvvt6i7gpuzEdK0GT/JOfBJcsCPranzZWdQ9HR4+5E0m5kf5gybZ6OX+UseIAE2/WND6Dv0aHgiI21AKenw==

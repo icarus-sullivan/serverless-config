@@ -8,11 +8,13 @@
   "scripts": {
     "build": "node index.js",
     "deploy": "npx serverless deploy",
-    "destroy": "npx serverless remove"
+    "destroy": "npx serverless remove",
+    "sls": "npx serverless"
   },
   "devDependencies": {
     "@sullivan/slim": "^0.0.2",
     "argparse": "^1.0.10",
+    "aws-sdk": "^2.656.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.3.0",
@@ -25,5 +27,8 @@
     "serverless": "^1.67.3",
     "serverless-iam-roles-per-function": "^2.0.2",
     "serverless-s3-sync": "^1.12.0"
+  },
+  "dependencies": {
+    "@sullux/fp-light": "^0.0.16"
   }
 }

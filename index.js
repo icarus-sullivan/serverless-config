@@ -41,8 +41,8 @@ const config = files
     events: [],
   });
 
+// Write build dir and config file
 fs.ensureDir(BUILD_DIR);
-
 fs.writeFileSync(
   path.join(BUILD_DIR, 'config.json'),
   JSON.stringify(config, null, 2),
