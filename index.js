@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const argparse = require('./utils/argparse');
 const resolve = require('./utils/resolve');
+const merge = require('./utils/merge');
 
 const BUILD_DIR = path.join(__dirname, 'build');
 fs.removeSync(BUILD_DIR);
@@ -29,15 +30,18 @@ const options = argparse({
 });
 
 const files = glob.sync('configuration/*');
+
 const config = files
   .map((f) => path.join(__dirname, f))
   .map(resolve)
   .map(JSON.stringify)
   .map((v) => slim(v)(options))
   .map(JSON.parse)
-  .reduce((a, b) => ({ ...a, ...b }), {});
+  .reduce(merge, {
+    events: [],
+  });
 
-fs.ensureDir(BUILD_DIR)
+fs.ensureDir(BUILD_DIR);
 
 fs.writeFileSync(
   path.join(BUILD_DIR, 'config.json'),

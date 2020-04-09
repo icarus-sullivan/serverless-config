@@ -1,0 +1,30 @@
+event:
+  schema:
+    id: 'request@1.0.0'
+    type: object
+    properties:
+      url:
+        description: 'endpoint'
+        type: string
+      data:
+        description: 'body'
+        type: 
+          - object
+          - any
+      params:
+        description: 'query'
+        type: object
+      method:
+        description: 'http method'
+        type: string
+        enum: 
+          - HEAD
+          - GET
+          - PUT
+          - POST
+          - DELETE
+    required:
+      url
+
+  lambda: "events-{{stage}}-request"
+    
