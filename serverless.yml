@@ -3,6 +3,11 @@ service: config
 plugins:
   - serverless-s3-sync
   - serverless-iam-roles-per-function
+  - serverless-webpack
+  - serverless-prune-plugin
+
+package:
+  individually: true
 
 custom:
   bucketName: config-ujl2de7-${self:provider.stage}
@@ -12,6 +17,18 @@ custom:
       localDir: build
 
   stage: ${self:provider.stage}
+
+  webpack:
+    packager: 'yarn'
+    includeModules:
+      forceExclude:
+        - aws-sdk
+
+  prune:
+    automatic: true
+    number: 2
+
+
 
 provider:
   name: aws
@@ -30,15 +47,15 @@ functions:
       - http:
           path: config
           method: get
+          cors: true
     iamRoleStatements:
       - Effect: Allow       
         Action:
           - s3:GetObject
           - s3:ListBucket     
         Resource:
-          Fn::GetAtt:
-            - ConfigBucket
-            - Arn
+          - arn:aws:s3:::${self:custom.bucketName}
+          - arn:aws:s3:::${self:custom.bucketName}/*
 
 resources:
   Resources:

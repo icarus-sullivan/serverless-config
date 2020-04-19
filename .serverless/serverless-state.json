@@ -161,7 +161,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/config/dev/1586437417573-2020-04-09T13:03:37.573Z/config.zip"
+                "S3Key": "serverless/config/dev/1587336162207-2020-04-19T22:42:42.207Z/getConfig.zip"
               },
               "FunctionName": "config-dev-getConfig",
               "Handler": "src/index.default",
@@ -185,14 +185,14 @@
               "GetConfigLogGroup"
             ]
           },
-          "GetConfigLambdaVersionvWzPg7YQUa5qM4IiRTJn6kmqRMcc51YGdM0EcKHNs0": {
+          "GetConfigLambdaVersionyuZOMkY4qmHoNOzZVhosednKmbJrCAakiOefGjM": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GetConfigLambdaFunction"
               },
-              "CodeSha256": "sHORzScnSuLszB4Xm8UeaNleCDhw0gDS5mY6YWNorfw="
+              "CodeSha256": "12eEil9WSm5JtvoW/3etnbmMJqJBbQS0d7//yKUmNCo="
             }
           },
           "ApiGatewayRestApi": {
@@ -217,6 +217,51 @@
                 ]
               },
               "PathPart": "config",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodConfigOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".*\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceConfig"
+              },
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -265,7 +310,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1586437397554": {
+          "ApiGatewayDeployment1587336159410": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -274,6 +319,7 @@
               "StageName": "dev"
             },
             "DependsOn": [
+              "ApiGatewayMethodConfigOptions",
               "ApiGatewayMethodConfigGet"
             ]
           },
@@ -365,12 +411,10 @@
                           "s3:GetObject",
                           "s3:ListBucket"
                         ],
-                        "Resource": {
-                          "Fn::GetAtt": [
-                            "ConfigBucket",
-                            "Arn"
-                          ]
-                        }
+                        "Resource": [
+                          "arn:aws:s3:::config-ujl2de7-dev",
+                          "arn:aws:s3:::config-ujl2de7-dev/*"
+                        ]
                       }
                     ]
                   }
@@ -409,7 +453,7 @@
           "GetConfigLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GetConfigLambdaVersionvWzPg7YQUa5qM4IiRTJn6kmqRMcc51YGdM0EcKHNs0"
+              "Ref": "GetConfigLambdaVersionyuZOMkY4qmHoNOzZVhosednKmbJrCAakiOefGjM"
             }
           },
           "ServiceEndpoint": {
@@ -514,11 +558,25 @@
           "localDir": "build"
         }
       ],
-      "stage": "dev"
+      "stage": "dev",
+      "webpack": {
+        "packager": "yarn",
+        "includeModules": {
+          "forceExclude": [
+            "aws-sdk"
+          ]
+        }
+      },
+      "prune": {
+        "automatic": true,
+        "number": 2
+      }
     },
     "plugins": [
       "serverless-s3-sync",
-      "serverless-iam-roles-per-function"
+      "serverless-iam-roles-per-function",
+      "serverless-webpack",
+      "serverless-prune-plugin"
     ],
     "pluginsData": {},
     "functions": {
@@ -532,6 +590,25 @@
             "http": {
               "path": "config",
               "method": "get",
+              "cors": {
+                "origins": [
+                  "*"
+                ],
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -542,12 +619,14 @@
           }
         ],
         "name": "config-dev-getConfig",
-        "package": {},
+        "package": {
+          "artifact": ".serverless/getConfig.zip"
+        },
         "memory": 1536,
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "GetConfigLambdaVersionvWzPg7YQUa5qM4IiRTJn6kmqRMcc51YGdM0EcKHNs0"
+        "versionLogicalId": "GetConfigLambdaVersionyuZOMkY4qmHoNOzZVhosednKmbJrCAakiOefGjM"
       }
     },
     "resources": {
@@ -563,11 +642,11 @@
     },
     "serviceFilename": "serverless.yml",
     "layers": {},
-    "isDashboardMonitoringPreconfigured": false,
-    "artifact": "/home/sully/Desktop/serverless-config/.serverless/config.zip"
+    "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/config/dev/1586437417573-2020-04-09T13:03:37.573Z",
-    "artifact": "config.zip"
+    "individually": true,
+    "artifactDirectoryName": "serverless/config/dev/1587336162207-2020-04-19T22:42:42.207Z",
+    "artifact": ""
   }
 }
